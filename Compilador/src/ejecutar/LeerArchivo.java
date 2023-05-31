@@ -1,14 +1,9 @@
 
 package ejecutar;
 
-import java.io.RandomAccessFile;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import palabras.lexico;
+import java.io.IOException;
 
 
 
@@ -16,61 +11,47 @@ public class LeerArchivo {
     
   
     public static void main(String[] args) {
-        /*
-        String rutaArchivo = "ruta_del_archivo.txt";
+        String filePath = "Demo.txt";
 
-        try {
-            // Crea una instancia de la clase File
-            File archivo = new File(rutaArchivo);
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            int lineNumber = 1;
 
-            // Crea una instancia de la clase Scanner para leer el archivo
-            Scanner scanner = new Scanner(archivo);
-
-            // Lee el archivo línea por línea
-            while (scanner.hasNextLine()) {
-                String linea = scanner.nextLine();
-                System.out.println(linea);
+            while ((line = reader.readLine()) != null) {
+                tokenizeLine(line, lineNumber);
+                lineNumber++;
             }
-
-            // Cierra el Scanner
-            scanner.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("El archivo no pudo ser encontrado.");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-}
-        */
-        
-        
-         String input = "string adsqwe = 54 + 50;";
-        /*Definir patrones de tokens*/ 
-        Pattern keywordPattern = Pattern.compile("\\b(int|float|string)\\b");
-        Pattern identifierPattern = Pattern.compile("\\b[a-zA-Z][a-zA-Z0-9]*\\b");
-        Pattern operatorPattern = Pattern.compile("[=+\\-*/]");
 
-        Matcher matcher = Pattern.compile("\\s+|;").matcher(input);
-        int prevEnd = 0;
-        
-        while (matcher.find()) {
-            String token = input.substring(prevEnd, matcher.start());
-            // Verificar el tipo de token
-            if (keywordPattern.matcher(token).matches()) {
-                System.out.println("Palabra clave: " + token);
-            } else if (identifierPattern.matcher(token).matches()) {
-                System.out.println("Identificador: " + token);
-            } else if (operatorPattern.matcher(token).matches()) {
-                System.out.println("Operador: " + token);
-            } else {
-                System.out.println("Token no reconocido: " + token);
+    private static void tokenizeLine(String line, int lineNumber) {
+        String[] tokens = line.split("\\s+");
+
+        for (String token : tokens) {
+            switch (token) {
+                case "int":
+                case "float":
+                case "boolean":
+                    System.out.println("Palabra clave: " + token + " en la línea " + lineNumber);
+                    break;
+                case "=":
+                case "+":
+                case "-":
+                case "*":
+                case "/":
+                    System.out.println("Operador: " + token + " en la línea " + lineNumber);
+                    break;
+                default:
+                    if (token.matches("[a-zA-Z_][a-zA-Z0-9]*")) {
+                        System.out.println("Identificador: " + token + " en la línea " + lineNumber);
+                    } else if (token.matches("[0-9]+")) {
+                        System.out.println("Número: " + token + " en la línea " + lineNumber);
+                    } else {
+                        System.out.println("Token no reconocido: " + token + " en la línea " + lineNumber);
+                    }
             }
-
-            prevEnd = matcher.end();
         }
     }
 }
-        
-        
-
-      
-
